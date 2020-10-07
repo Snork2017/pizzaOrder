@@ -1,0 +1,178 @@
+<!-- WELCOME {{.email}} TO ACCOUNT -->
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+    <link rel="stylesheet" href="http://dimsemenov.com/plugins/magnific-popup/site-assets/all.min.css?v=0.9.9">
+	<title></title>
+</head>
+<body>
+	<div>
+		<p>ПРИВЕТ {{.email}}</p>
+	</div>
+	<div>
+		<button class="popup-with-form1" href="#test-form1">AddPizza</button>
+        <div id="test-form1" class="white-popup-block mfp-hide"> 
+        	<h1>Добавление пиццы в магазин для пользователей</h1>
+        	 <div id="brd">
+            	
+        	</div>
+            <select onclick="addPizzaPrice()" id="pizzaName">
+                <option value="Маргарита L" >Маргарита L</option> 
+                <option value="Маргарита XL">Маргарита XL</option>
+                <option value="4 сыра L">4 сыра L</option>
+                <option value="4 сыра XL">4 сыра XL</option>
+                <option value="Вегетарианская L">Вегетарианская L</option>
+                <option value="Вегетарианская XL">Вегетарианская XL</option>
+            </select>
+            <input id="pizzaPrice" readonly>
+            <span>Грн</span>
+            <button onclick="sendPizza()" >Добавить</button>
+        </div>
+      
+	</div>
+	<form action="/admin/ ">  
+        <button onclick="logOut()">Log Out</button>
+    </form>
+    <div>
+    	<button class="popup-with-form2" href="#test-form2" onclick="userList()">Список Юзеров</button>
+    	<div id="test-form2" class="white-popup-block mfp-hide"> 
+            <table>
+                <tbody id= "brd1">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script src="http://dimsemenov.com/plugins/magnific-popup/dist/jquery.magnific-popup.min.js?v=0.9.9"></script>
+</html>
+<style>
+
+</style>
+<script>
+	function userList() {
+		$.get( "/admin/userList", function( data ) {
+			$('#brd1').empty();
+            $.each(data, function(k,v)  {
+            	$('#brd1').append("<tr><td>"+v+"<button class='delete' data-name='"+v+"'>Удалить</button></td></tr>");
+            });
+    	});
+	
+		$('#brd1').on('click', '.delete', function() {   
+    	    var name = $(this).attr("data-name"); 
+    	    console.log(name)
+    	    $.ajax({   
+    	        url: '/admin/banUser',    
+    	        type: 'DELETE', 
+    	        data: JSON.stringify(name), 
+    	        contentType: "application/json; charset=utf-8",   
+    	        dataType: "json",   
+    	    }); 
+    	});
+    }
+	function addPizzaPrice() {
+		var pizzaPrice = document.getElementById("pizzaPrice")
+		if(document.getElementById('pizzaName').value == "Маргарита L") {
+     		pizzaPrice.value = 80;
+		}
+		if(document.getElementById('pizzaName').value == "Маргарита XL") {
+     		pizzaPrice.value = 140;
+		}
+		if(document.getElementById('pizzaName').value == "4 сыра L") {
+     		pizzaPrice.value = 99;
+		}
+		if(document.getElementById('pizzaName').value == "4 сыра XL") {
+     		pizzaPrice.value = 160;
+		}
+		if(document.getElementById('pizzaName').value == "Вегетарианская L") {
+     		pizzaPrice.value = 55;
+		}
+		if(document.getElementById('pizzaName').value == "Вегетарианская XL") {
+     		pizzaPrice.value = 130;
+		}
+		console.log(pizzaPrice.value)
+	}
+	function logOut() {
+        $.get( "/admin/logOut")
+    }
+	function sendPizza() {
+		if(document.getElementById('pizzaName').value == "Маргарита L") {
+     		$("#brd").append("<img src='http://v.img.com.ua/nxs199/b/600x500/9/f8/0ec35ab54c1be68ced597584c07d6f89.jpg' width='160px'>")
+		}
+		if(document.getElementById('pizzaName').value == "Маргарита XL") {
+     		$("#brd").append("<img src='http://v.img.com.ua/nxs199/b/600x500/9/f8/0ec35ab54c1be68ced597584c07d6f89.jpg' width='160px'>")
+		}
+		if(document.getElementById('pizzaName').value == "4 сыра L") {
+     		$("#brd").append("<img src='https://sushiyammi.com.ua/wp-content/uploads/2019/09/4-%D1%81%D1%8B%D1%80%D0%B0-%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F.png' width='160px'>")
+		}
+		if(document.getElementById('pizzaName').value == "4 сыра XL") {
+     		$("#brd").append("<img src='https://sushiyammi.com.ua/wp-content/uploads/2019/09/4-%D1%81%D1%8B%D1%80%D0%B0-%D0%BA%D0%BE%D0%BF%D0%B8%D1%8F.png' width='160px'>")
+		}
+		if(document.getElementById('pizzaName').value == "Вегетарианская L") {
+     		$("#brd").append("<img src='http://buona-pizza.ru/images/vegitarianskaya.png?crc=448851484' width='160px'>")
+		}
+		if(document.getElementById('pizzaName').value == "Вегетарианская XL") {
+     		$("#brd").append("<img src='http://buona-pizza.ru/images/vegitarianskaya.png?crc=448851484' width='160px'>")
+		}
+		var data = {
+			"name": $('#pizzaName').val(),
+			"price": $('#pizzaPrice').val(),
+		}
+		$.ajax({   
+            type: "POST",   
+            url: "/admin/sendPizza",   
+            data: JSON.stringify(data), 
+            contentType: "application/json; charset=utf-8",   
+            dataType: "json",          
+    	});
+		console.log(data)
+	}
+	$(document).ready(function() {
+        $('.close').click(function() {
+            $.magnificPopup.close();
+        });
+    });
+
+    $(document).ready(function() {
+
+    	$('.popup-with-form2').magnificPopup({
+	        type: 'inline',
+	        preloader: false,
+	        focus: '#E-Mail',
+	    });
+
+	    $('.popup-with-form1').magnificPopup({
+	        type: 'inline',
+	        preloader: false,
+	        focus: '#E-Mail',
+	        callbacks: {
+	            beforeOpen: function() {
+	                if($(window).width() < 700) {
+	                    this.st.focus = false;
+	                } else {
+	                    this.st.focus = '#E-Mail';
+	                }
+	            }
+	        }
+	    });
+	});
+
+    // function addPizza() {
+
+    // 	$.ajax({   
+    //         url: '/admin/addPizza',    
+    //         type: 'POST', 
+    //         data: JSON.stringify(data),
+    //         contentType: "application/json; charset=utf-8",  
+    //         dataType: "json", 
+    //         success : function(data) {
+    //             console.log(data.name)
+    //             console.log(data.size)
+    //         },
+    //     }); 
+    //     console.log(data) 
+    // }
+</script>
+
+

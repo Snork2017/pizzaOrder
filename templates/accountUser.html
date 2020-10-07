@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+    <link rel="stylesheet" href="http://dimsemenov.com/plugins/magnific-popup/site-assets/all.min.css?v=0.9.9">
+	<title></title>
+</head>
+<body>
+	<div>
+		<p>ПРИВЕТ {{.email}}</p>
+	<div>
+	<form action="/user/pizza" method="GET">
+		<button>Pizza</button>
+	</form>
+    <form action="/user/">  
+        <button onclick="logOut()">Log Out</button>
+    </form>
+	<div>
+		<button class="popup-with-form1" onclick="getPizza()" href="#test-form1">Корзина</button>
+        <div id="test-form1" class="white-popup-block mfp-hide"> 
+            <table>
+                <tbody id= "brd">
+                
+                </tbody>
+            </table>
+        </div>
+	</div>
+</body>
+<script src="http://dimsemenov.com/plugins/magnific-popup/dist/jquery.magnific-popup.min.js?v=0.9.9"></script>
+</html>
+
+<script>
+    function logOut() {
+        $.get( "/user/logOut")
+    }
+    function getPizza() {   
+        $.get( "/user/getPizza", function( data ) {
+            $('#brd').empty();
+            $.each(data, function(k)  {
+                $("#brd").append("<tr id = 'remove'><td>"+data[k].name+"<td><br/><td>"+data[k].price+"<td><br/><button class='delete' data-pizza='"+data[k].name+"'><img src='https://img.icons8.com/color/16/000000/delete-sign.png'></button></tr>");
+            });
+            console.log(data);
+        });
+    }
+    $('#brd').on('click', '.delete', function() {   
+        var dataId = $(this).attr("data-id"); 
+        var name = $(this).attr("data-pizza"); 
+        console.log(name)
+        $.ajax({   
+            url: '/user/pizzaDelete',    
+            type: 'DELETE', 
+            data: JSON.stringify(name), 
+            contentType: "application/json; charset=utf-8",   
+            dataType: "json",   
+            success : function(data) {
+                console.log(data.name)
+            },
+        }); 
+        $("#remove").remove();
+    });
+    //pop up
+    $(document).ready(function() {
+        $('.close').click(function() {
+            $.magnificPopup.close();
+        });
+    });
+
+    $(document).ready(function() {
+
+        $('.popup-with-form').magnificPopup({
+            type: 'inline',
+            preloader: false,
+            focus: '#E-Mail',
+            callbacks: {
+                beforeOpen: function() {
+                    if($(window).width() < 700) {
+                        this.st.focus = false;
+                    } 
+                }
+            }
+        });
+    });
+
+    $('.popup-with-form1').magnificPopup({
+        type: 'inline',
+        preloader: false,
+        focus: '#E-Mail',
+        callbacks: {
+            beforeOpen: function() {
+                if($(window).width() < 700) {
+                    this.st.focus = false;
+                } else {
+                    this.st.focus = '#E-Mail';
+                }
+            }
+        }
+    });
+    
+    </script>   
+
+
+    
+
+        
+
+        
+
+        

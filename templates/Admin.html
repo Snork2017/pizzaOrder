@@ -1,0 +1,192 @@
+<!DOCTYPE html> 
+        <head>  
+            <meta charset="utf-8">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>   
+            <link rel="stylesheet" href="http://dimsemenov.com/plugins/magnific-popup/site-assets/all.min.css?v=0.9.9">
+            <link rel="stylesheet" type="text/css" href="./css/Admin.css">
+        </head> 
+        <body> 
+	        <!-- LOGIN -->
+	        <button class="popup-with-form" href="#test-form">Login</button>
+	        <div id="test-form" class="white-popup-block mfp-hide">
+		        <h1 align="center">Log In</h1>
+	            <fieldset style="border:0;">
+		            <div id="test- form" class="white-popup-block mfp-hide"></div>
+                    <form action="/admin/login" method="post"> 
+			            <ol>
+			                <li>
+			                    <label for="EMailLog"><b>E-Mail</b></label>  
+			                    <input name="EMailLog" id="EMailLog" type="text" class="margin1" placeholder="EMailLog"> 
+			                </li>
+			                <li>
+			                    <label for="passwordLog"><b>Password</b></label>    
+			                    <input name="passwordLog" id="passwordLog" type="password" placeholder="passwordLog" autocomplete="on"> 
+			                 </li>
+			                    <button class="close" >Login</button>
+			             </ol>
+                    </form>
+			    </fieldset> 
+		    </div> 
+        <!-- ------------------------------------------------------------------ -->
+        <!-- SIGN UP -->
+        <button class="popup-with-form1" href="#test-form1">Sign UP</button>
+        <div id="test-form1" class="white-popup-block mfp-hide"> 
+            <div>
+                <h1 align="center">Sign Up</h1>
+                <fieldset style="border:0;">
+                    <div id="test-form1" class="white-popup-block mfp-hide"></div>
+                    <form action="/admin/signUp" method="post"> 
+                        <ol>
+                            <li>
+                                <label for="EMailReg"><b>E-Mail</b></label>  
+                                <input name="EMailReg" id="EMailReg" type="text" class="margin2" placeholder="EmailReg"> 
+                            </li>
+                            <li>
+                                <label for="passwordReg"><b>Password</b></label>    
+                                <input name="passwordReg" id="passwordReg" type="password" class="margin3"
+                                placeholder="passwordReg" autocomplete="on"> 
+                            </li>
+                                <button id="sign-up" class="close">Sign Up</button>
+                        </ol>
+                    </form>  
+                </fieldset>
+            </div>
+        </div>
+        <div>
+            <form action="/user">
+                <button>Страница Пользователей</button>
+            </form>
+             <form action="/page">
+                <button>На Главную</button>
+            </form>
+            {{.pin}}
+        </div>
+    <script src="http://dimsemenov.com/plugins/magnific-popup/dist/jquery.magnific-popup.min.js?v=0.9.9"></script>
+    </body> 
+</html> 
+
+<script>
+    //pop up
+    $(document).ready(function() {
+        $('.close').click(function() {
+            $.magnificPopup.close();
+        });
+    });
+
+    $(document).ready(function() {
+
+        $('.popup-with-form').magnificPopup({
+            type: 'inline',
+            preloader: false,
+            focus: '#E-Mail',
+            callbacks: {
+                beforeOpen: function() {
+                    if($(window).width() < 700) {
+                        this.st.focus = false;
+                    } else {
+                        this.st.focus = '#E-Mail';
+                    }
+                }
+            }
+        });
+    });
+
+//     function lastRegisteredUser() {
+//         var data = {    
+//             "eMail": $('#EMailReg').val(),
+//             "password": $('#passwordReg').val(), 
+//         }; 
+//         console.log(data)
+//         $.ajax({   
+//             type: "POST",   
+//             url: "/showUsers",   
+//             data: JSON.stringify(data), 
+//             contentType: "application/javascript; charset=utf-8",   
+//             dataType: "json",          
+//     });
+// } 
+
+    $('.popup-with-form1').magnificPopup({
+        type: 'inline',
+        preloader: false,
+        focus: '#E-Mail',
+        callbacks: {
+            beforeOpen: function() {
+                if($(window).width() < 700) {
+                    this.st.focus = false;
+                } else {
+                    this.st.focus = '#E-Mail';
+                }
+            }
+        }
+    });
+
+    </script>   
+    
+    <script src="http://dimsemenov.com/plugins/magnific-popup/dist/jquery.magnific-popup.min.js?v=0.9.9">
+        //POP-UP 
+    </script>
+    <style> 
+        input:read-only {
+            background-color: #aaa;
+            border: 1px solid #888;
+        }
+        textarea:read-only:hover {
+            cursor: not-allowed;
+        }
+        mfp-close-btn-in .mfp-close {
+            color: #333;
+        }
+        .margin1 {
+            margin-left: 25px;
+        }
+        .margin2 {
+            margin-left: 78px;
+        }
+        .margin3 {
+            margin-left: 54px;
+        }
+        .white-popup-block {
+            background: #84a4e0;
+            padding: 21px 30px;
+            text-align: left;
+            max-width: 400px;
+            margin: 40px auto;
+            position: relative;
+        }
+        .hidden {
+            display: none;
+        }  
+        .brd {   
+            border: 4px double black;   
+            background: #fc3;   
+            padding: 1px;   
+            margin-left: 50%;   
+            width: 100px;   
+        }    
+        .brd1 { 
+            width: 200px;   
+            position: absolute; 
+            border-right: 600px;    
+        } 
+        {  
+            font-family: Areal;    
+        }
+        .brd2 { 
+            width: 200px;   
+            position: absolute; 
+            border-right: 600px;    
+        } 
+        .b-popup-content{  
+            margin-left: :200px auto 0px auto;  
+            position: absolute; 
+            top:100px;  
+            right: 500px;   
+            width:300px;    
+            height: 400px;  
+            padding:10px;   
+            background-color: #c5c5c5;  
+            border-radius:5px;  
+            box-shadow: 0px 0px 10px #000;  
+        } 
+      </style>

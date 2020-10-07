@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+    <link rel="stylesheet" href="http://dimsemenov.com/plugins/magnific-popup/site-assets/all.min.css?v=0.9.9">
+	<meta charset="utf-8">
+	<title>Page</title>
+</head>
+<body>
+	<form action="/user" method="GET">
+		<button>Ввойти на страницу пользователей</button>
+	</form>
+	<form action='/admin'>
+		<button>Ввойти на админ страницу</button>
+	</form>
+	{{.pin}}
+	<div>
+        <button class="popup-with-form" href="#test-form" >Проверка пароля для администраторов!</button>
+        <div id="test-form" class="white-popup-block mfp-hide"> 
+        	<div id="brd">
+				<input type='text' name='pinCode' id='pin'> Введите Пин-код для входа на страницу Админа</input><button onclick="checkPinAdm()">Отправить пароль на проверку</button>
+				<div id="brd1">
+					
+				</div>
+			</div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="http://dimsemenov.com/plugins/magnific-popup/dist/jquery.magnific-popup.min.js?v=0.9.9"></script>
+<script>
+	function checkPinAdm() {	
+		var pin = {
+			"pinadm": $('#pin').val(),
+		}
+		console.log(pin)
+		$.ajax({   
+	        url: '/admin/checkPinAdm',    
+	        type: 'POST', 
+	        data: JSON.stringify(pin), 
+	        contentType: "application/json; charset=utf-8",   
+	        dataType: "json", 
+	    });	
+
+	}
+	$(document).ready(function() {
+        $('.close').click(function() {
+            $.magnificPopup.close();
+        });
+    });
+	$(document).ready(function() {
+        $('.popup-with-form').magnificPopup({
+            type: 'inline',
+            preloader: false,
+            focus: '#name',
+            callbacks: {
+                beforeOpen: function() {
+                    if($(window).width() < 700) {
+                        this.st.focus = false;
+                    }
+                }
+            }
+        });
+    });
+</script>

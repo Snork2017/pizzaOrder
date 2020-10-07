@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+</head>
+<body>
+	<div>
+		<tr>
+			<td>
+				<form action="/user/payPayed" method="post"><input id="email" class="noBorder" value="{{.orderName}}" readonly disabled=""></td><br>
+				<td >Заказ: <input id="status" class="noBorder red" value="{{.orderStatus}}" readonly disabled	=""></td><br>
+				<td><input id="pizzas" class="noBorder green" value="{{.orderPizza}}" disabled readonly ></td>	<br>
+				<td>Номер карты и адрес: <input class="noBorder green" id="data" value="{{.orderData}}"></td><br>
+				<td>Общая сумма: <input class="noBorder green" value="{{.orderSum}}"></td><br>
+				<button >Оплатить</button>
+			</form>
+			<button>Отменить</button>
+		</tr> 
+		<form action="/user/pizza">
+			<button>Вернуться назад</button>
+		</form>
+	</div> 
+</body>
+</html>
+<style>
+	.noBorder {
+		border: 0px;
+		background: white;
+		width: 400px;
+	}
+	.red {
+		color: red;
+	}
+	.green {
+		color: green;
+	}
+</style>
