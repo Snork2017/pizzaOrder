@@ -1,16 +1,17 @@
 package main
 
 import (
+	"./MongoDb"
+	"./structs"
+	"./token"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
-	"fmt"
 	"sync"
-	"./MongoDb"
-	"./structs"
-	"./token"
 )
+
 /////////Заменить на CACHE, или брать данные с базы.
 var paymentArray []classes.Payment
 var resultsPizzas []classes.Pizza
@@ -25,18 +26,18 @@ var status string
 var sum int64
 var database string = "developer"
 var RWM sync.RWMutex
+
 /////////////////////////////////////////////////////////////////////
 type Collection struct {
 	C *mgo.Collection
 }
 
 var cacheAdmin *CacheAdmin
-var cacheUser  *CacheUser
-
+var cacheUser *CacheUser
 
 func readAdmins(c *mgo.Collection) {
 	var resultsAdmins []classes.Admin
-	err := c.Find(bson.M{}).All(&resultsAdmins)	
+	err := c.Find(bson.M{}).All(&resultsAdmins)
 	if err != nil {
 		fmt.Println("query.All() ->", err)
 		return
@@ -50,7 +51,7 @@ func readAdmins(c *mgo.Collection) {
 
 func readPeople(c *mgo.Collection) {
 	var resultsPerson []classes.Person
-	err := c.Find(bson.M{}).All(&resultsPerson)	
+	err := c.Find(bson.M{}).All(&resultsPerson)
 	if err != nil {
 		fmt.Println("query.All() ->", err)
 		return
@@ -63,41 +64,41 @@ func readPeople(c *mgo.Collection) {
 }
 
 type CacheAdmin struct {
- 	Items map[string]classes.ValueAdmin
- 	sync.RWMutex
+	Items map[string]classes.ValueAdmin
+	sync.RWMutex
 }
 
 type CacheUser struct {
 	Items map[string]classes.ValueUser `json: "items"`
- 	sync.RWMutex
+	sync.RWMutex
 }
 
-func NewUser() *CacheUser{
-  	Items := make(map[string]classes.ValueUser)
-  	cache := CacheUser{
-    	Items:  Items,
-  	}
- 	return &cache
+func NewUser() *CacheUser {
+	Items := make(map[string]classes.ValueUser)
+	cache := CacheUser{
+		Items: Items,
+	}
+	return &cache
 }
 
 func NewAdmin() *CacheAdmin {
-  	Items := make(map[string]classes.ValueAdmin)
-  	cache := CacheAdmin{
-    	Items:  Items,
-  	}
- 	return &cache
+	Items := make(map[string]classes.ValueAdmin)
+	cache := CacheAdmin{
+		Items: Items,
+	}
+	return &cache
 }
 
 func (cu *CacheUser) SetUser(key string, value classes.ValueUser) {
-  	cu.Lock()
-  	cu.Items[key] = value
-  	cu.Unlock()
+	cu.Lock()
+	cu.Items[key] = value
+	cu.Unlock()
 }
 
 func (ca *CacheAdmin) SetAdmin(key string, value classes.ValueAdmin) {
-  	ca.Lock()
-  	ca.Items[key] = value
-  	ca.Unlock()
+	ca.Lock()
+	ca.Items[key] = value
+	ca.Unlock()
 }
 
 // func (cu *CacheUser) DeleteUser(key string) error {
@@ -139,11 +140,12 @@ func (people *Collection) signUpUsers(c *gin.Context) {
 	})
 	readPeople(p)
 }
+
 ///Добавить поиск пиццы по названию!
 ///Добавить отмена заказа!
 ///Добавить удаление заказа при оплате!
 ///Добавить удаление(бан) пользователей в админке!
-func payedOrder(c *gin.Context) { 
+func payedOrder(c *gin.Context) {
 	c.Request.ParseForm()
 	eMail := c.PostForm("email")
 	fmt.Println(eMail)
@@ -156,6 +158,7 @@ func payedOrder(c *gin.Context) {
 	paymentArray = append(paymentArray, payment)
 	c.String(http.StatusOK, "Ваш заказ успешно оплачен, ожидайте товар в течении 15-20 минут, мы вам перезвоним")
 }
+
 //////////////////////////////////////
 func savePizzaAdmin(c *gin.Context) {
 	var jsonPizza classes.Pizza
@@ -166,7 +169,6 @@ func savePizzaAdmin(c *gin.Context) {
 	}
 	resultsPizzaAdm = append(resultsPizzaAdm, jsonPizza)
 }
-
 
 func paymentPizza(c *gin.Context) {
 	err := c.BindJSON(&checkDataUser)
@@ -335,14 +337,14 @@ func (pizza *Collection) pizzaOrder(c *gin.Context) {
 func loginAdmin(c *gin.Context) {
 	c.Request.ParseForm()
 	eMail := c.PostForm("EMailLog")
-	if eMail == " "{
+	if eMail == " " {
 		fmt.Println("The field => Email is empty")
-		return 
+		return
 	}
 	password := c.PostForm("passwordLog")
-	if password == " "{
+	if password == " " {
 		fmt.Println("The field => password is empty")
-		return 
+		return
 	}
 	token, err := token.CreateToken(eMail, password)
 	if err != nil {
@@ -360,6 +362,7 @@ func loginAdmin(c *gin.Context) {
 	} else {
 		c.SetCookie("token", token, 3600, "/", "localhost", false, false)
 		c.SetCookie("email", eMail, 3600, "/", "localhost", false, false)
+		c.SetCookie("status", "admin", 3600, "/", "localhost", false, false)
 		c.HTML(http.StatusOK, "accountAdmin.html", gin.H{
 			"email": eMail,
 		})
@@ -370,14 +373,14 @@ func (people *Collection) loginUser(c *gin.Context) {
 	c.Request.ParseForm()
 	p := people.C
 	eMail := c.PostForm("EMailLog")
-	if eMail == " "{
+	if eMail == " " {
 		fmt.Println("The field => Email is empty")
-		return 
+		return
 	}
 	password := c.PostForm("passwordLog")
-	if password == " "{
+	if password == " " {
 		fmt.Println("The field => password is empty")
-		return 
+		return
 	}
 	token, err := token.CreateToken(eMail, password)
 	if err != nil {
@@ -394,9 +397,11 @@ func (people *Collection) loginUser(c *gin.Context) {
 	}
 	c.SetCookie("token", token, 3600, "/", "localhost", false, false)
 	c.SetCookie("email", eMail, 3600, "/", "localhost", false, false)
+	c.SetCookie("status", "user", 3600, "/", "localhost", false, false)
 	c.HTML(http.StatusOK, "accountUser.html", gin.H{
 		"email": eMail,
 	})
+
 	checkDB.ReadPizza(p, eMail)
 }
 
@@ -433,6 +438,8 @@ func (people *Collection) signUpAdmins(c *gin.Context) {
 func logoutUser(c *gin.Context) {
 	// Clear the cookie
 	c.SetCookie("token", "", -1, "", "", false, true)
+	c.SetCookie("email", "", -1, "", "", false, true)
+	c.SetCookie("status", "", -1, "", "", false, true)
 	c.Set("isLoggedIn", false)
 	// Redirect to the home page
 	c.Redirect(http.StatusFound, "/user")
@@ -441,29 +448,31 @@ func logoutUser(c *gin.Context) {
 func logoutAdmin(c *gin.Context) {
 	// Clear the cookie
 	c.SetCookie("token", "", -1, "", "", false, true)
+	c.SetCookie("email", "", -1, "", "", false, true)
+	c.SetCookie("status", "", -1, "", "", false, true)
 	c.Set("isLoggedIn", false)
 	// Redirect to the home page
 	c.Redirect(http.StatusFound, "/admin")
 }
 
 func (people *Collection) banUser(c *gin.Context) {
-	var requestUser string 
+	var requestUser string
 	p := people.C
 	err := c.Bind(&requestUser)
 	if err != nil {
 		fmt.Println("banUser() ->", err.Error())
 		return
 	}
-		RWM.Lock()
+	RWM.Lock()
 	for k := range cacheUser.Items {
 		if k == requestUser {
-			if _ , found := cacheUser.Items[k]; !found {
+			if _, found := cacheUser.Items[k]; !found {
 				fmt.Println("not found")
 				RWM.Unlock()
-    			return 
-  			} else {
-  				delete(cacheUser.Items, k)
-  			}
+				return
+			} else {
+				delete(cacheUser.Items, k)
+			}
 		}
 	}
 	RWM.Unlock()
@@ -480,7 +489,7 @@ func (people *Collection) banUser(c *gin.Context) {
 
 func main() {
 	cacheAdmin = NewAdmin()
-	cacheUser  = NewUser()
+	cacheUser = NewUser()
 	var err error
 	checkDB.Session, err = mgo.Dial("mongodb://localhost:27017/" + database)
 	if err != nil {
@@ -533,9 +542,9 @@ func main() {
 		routeAdmins.POST("/checkPinAdm", checkDB.CheckPinAdm)
 		routeAdmins.POST("/login", loginAdmin)
 		routeAdmins.POST("/signUp", admins.signUpAdmins)
-		routeAdmins.GET("/userList", func(c*gin.Context) {
+		routeAdmins.GET("/userList", func(c *gin.Context) {
 			var elems []string
-			for k,v := range cacheUser.Items {
+			for k, v := range cacheUser.Items {
 				fmt.Println(k, v)
 				elems = append(elems, k)
 				fmt.Println(elems)
@@ -552,12 +561,15 @@ func main() {
 	routeUser := r.Group("/user")
 	{
 		routeUser.GET("/", func(c *gin.Context) {
+			cookieStatus, _ := c.Cookie("status")
+			if cookieStatus == "admin" {
+				c.String(http.StatusForbidden, "Error", cookieStatus)
+				return
+			}
 			_, err := c.Cookie("token")
 			cookieEMAIL, _ := c.Cookie("email")
 			if err != nil {
-				c.HTML(http.StatusOK, "User.html", gin.H{
-					"title": "User",
-				})
+				c.HTML(http.StatusOK, "User.html", nil)
 			} else {
 				c.HTML(200, "accountUser.html", gin.H{
 					"email": cookieEMAIL,
@@ -605,4 +617,3 @@ func main() {
 		panic(err1)
 	}
 }
-
